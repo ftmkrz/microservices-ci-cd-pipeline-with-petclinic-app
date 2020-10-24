@@ -3,7 +3,7 @@ pipeline {
     environment {
         PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
         APP_NAME="petclinic"
-        APP_STACK_NAME="Fatma-${APP_NAME}-app-${BUILD_NUMBER}"
+        APP_STACK_NAME="Ftm-${APP_NAME}-app-dev-${BUILD_NUMBER}"
         APP_REPO_NAME="fatma-repo/${APP_NAME}-app-dev"
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
@@ -14,7 +14,7 @@ pipeline {
         ANSIBLE_HOST_KEY_CHECKING="False"
     }
     stages {
-        stage('Create ECR Repo') {
+        stage('Create ECR Repo'){
             steps {
                 echo "Creating ECR Repo for ${APP_NAME} app"
                 sh """
@@ -26,13 +26,13 @@ pipeline {
                 """
             }
         }
-        stage('Package Application') {
+        stage('Package Application'){
             steps {
                 echo 'Packaging the app into jars with maven'
                 sh ". ./jenkins/package-with-maven-container.sh"
             }
         }
-        stage('Prepare Tags for Docker Images') {
+        stage('Prepare Tags for Docker Images'){
             steps {
                 echo 'Preparing Tags for Docker Images'
                 script {
@@ -57,20 +57,20 @@ pipeline {
                 }
             }
         }
-        stage('Build App Docker Images') {
+        stage('Build App Docker Images'){
             steps {
                 echo 'Building App Dev Images'
                 sh ". ./jenkins/build-dev-docker-images-for-ecr.sh"
                 sh 'docker image ls'
             }
         }
-        stage('Push Images to ECR Repo') {
+        stage('Push Images to ECR Repo'){
             steps {
                 echo "Pushing ${APP_NAME} App Images to ECR Repo"
                 sh ". ./jenkins/push-dev-docker-images-to-ecr.sh"
             }
         }
-        stage('Create Key Pair for Ansible') {
+        stage('Create Key Pair for Ansible'){
             steps {
                 echo "Creating Key Pair for ${APP_NAME} App"
                 sh "aws ec2 create-key-pair --region ${AWS_REGION} --key-name ${CFN_KEYPAIR} --query KeyMaterial --output text > ${CFN_KEYPAIR}"
@@ -109,8 +109,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Create Docker Swarm for QA Automation Build') {
+        stage('Create Docker Swarm for QA Automation Build'){
             steps {
                 echo "Setup Docker Swarm for QA Automation Build for ${APP_NAME} App"
                 echo "Update dynamic environment"
@@ -125,7 +124,6 @@ pipeline {
                 sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml -b ./ansible/playbooks/pb_join_docker_swarm_workers.yaml"
             }
         }
-
         stage('Deploy App on Docker Swarm'){
             steps {
                 echo 'Deploying App on Swarm'
@@ -133,12 +131,10 @@ pipeline {
                 sh 'ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml -b --extra-vars "workspace=${WORKSPACE} app_name=${APP_NAME} aws_region=${AWS_REGION} ecr_registry=${ECR_REGISTRY}" ./ansible/playbooks/pb_deploy_app_on_docker_swarm.yaml'
             }
         }
-
         stage('Test the Application Deployment'){
             steps {
                 echo "Check if the ${APP_NAME} app is ready or not"
                 script {
-
                     while(true) {
                         try{
                             sh "curl -s ${GRAND_MASTER_PUBLIC_IP}:8080"
@@ -152,8 +148,8 @@ pipeline {
                     }
                 }
             }
-        }
 
+        }
         stage('Run QA Automation Tests'){
             steps {
                 echo "Run the Selenium Functional Test on QA Environment"
@@ -161,7 +157,6 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             echo 'Deleting all local images'
@@ -179,5 +174,6 @@ pipeline {
             sh "aws ec2 delete-key-pair --region ${AWS_REGION} --key-name ${CFN_KEYPAIR}"
             sh "rm -rf ${CFN_KEYPAIR}"
         }
+
     }
 }
