@@ -32,5 +32,4 @@ spec:
           ports:
             - containerPort: 9411
           resources: {}
-      restartPolicy: Always
 status: {}
