@@ -1,0 +1,17 @@
+nodes:
+    - address: 18.207.134.202
+      internal_address: 172.31.69.191
+      user: ubuntu
+      role: [controlplane, worker, etcd]
+services:
+    etcd:
+      snapshot: true
+      creation: 6h
+      retention: 24h
+ssh_key_path: /home/ec2-user/.ssh/call-rancher.key 
+  # Required for external TLS termination with
+  # ingress-nginx v0.22+
+ingress:
+    provider: nginx
+    options:
+      use-forwarded-headers: "true"
