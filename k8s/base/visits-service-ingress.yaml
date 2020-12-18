@@ -13,22 +13,11 @@ metadata:
   name: visits-service
 spec:
   rules:
-<<<<<<< HEAD
     - host: petclinic.fatmakiraz.me
       http:
         paths:
           - backend:
               serviceName: visits-service
               servicePort: 8082
-=======
-  - host: petclinic.clarusway.us
-    http:
-      paths:
-      - backend:
-          serviceName: visits-service
-          servicePort: 8082
-        path: /api/visit(/|$)(.*)
-        pathType: ImplementationSpecific
->>>>>>> a9cfa4ba82223efd337d0367c8d9e9e5a7b7756a
 status:
   loadBalancer: {}
