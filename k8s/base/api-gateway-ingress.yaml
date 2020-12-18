@@ -4,7 +4,7 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -f docker-compose.yml -o base
     kompose.image-pull-secret: regcred
-    kompose.service.expose: petclinic.clarusway.us
+    kompose.service.expose: petclinic.fatmakiraz.me
     kompose.version: 1.22.0 (955b78124)
   creationTimestamp: null
   labels:
@@ -12,7 +12,7 @@ metadata:
   name: api-gateway
 spec:
   rules:
-    - host: petclinic.clarusway.us
+    - host: petclinic.fatmakiraz.me
       http:
         paths:
           - backend:
