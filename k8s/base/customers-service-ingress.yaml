@@ -13,27 +13,11 @@ metadata:
   name: customers-service
 spec:
   rules:
-<<<<<<< HEAD
     - host: petclinic.fatmakiraz.me
       http:
         paths:
           - backend:
               serviceName: customers-service
               servicePort: 8081
-=======
-  - host: petclinic.clarusway.us
-    http:
-      paths:
-      - backend:
-          serviceName: customers-service
-          servicePort: 8081
-        path: /api/gateway(/|$)(.*)
-        pathType: ImplementationSpecific
-      - backend:
-          serviceName: customers-service
-          servicePort: 8081
-        path: /api/customer(/|$)(.*)
-        pathType: ImplementationSpecific
->>>>>>> a9cfa4ba82223efd337d0367c8d9e9e5a7b7756a
 status:
   loadBalancer: {}
